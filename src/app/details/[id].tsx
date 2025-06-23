@@ -1,12 +1,29 @@
 import { Stack, useRouter } from "expo-router";
 import React, { use } from "react";
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { useCart } from "@/context/cart-context";
+import { fetchProducts, fetchProductWithId } from "@/api/products";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {useCart} from "@/context/cart-context";
 const Details = () => {
   const { id } = useLocalSearchParams();
-  
-  
+  const queryClient = useQueryClient();
+  const {addToCart} = useCart();
+  const productId = Array.isArray(id) ? id[0] : id;
+  const { data: product, isLoading } = useQuery({
+    queryKey: ["product"],
+    queryFn: () => fetchProductWithId(productId),
+    refetchOnWindowFocus: false,
+    enabled: !!productId,
+  });
+  if (isLoading) {
+    return (
+      <View style={styles.containerLoading}>
+        <Text style={styles.headerLoading}>Carregando...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Stack.Screen
@@ -28,6 +45,9 @@ const Details = () => {
           currency: "BRL",
         })}
       </Text>
+      <TouchableOpacity style={styles.buttonAdd} onPress={() => {addToCart(product!); }}>
+        <Text style={styles.buttonAddText}>Adicionar ao carrinho</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -66,6 +86,31 @@ const styles = StyleSheet.create({
     color: "#2c3e50",
     marginBottom: 16,
   },
+  containerLoading: {
+    flex: 1,
+    backgroundColor: "#f6f6f6",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerLoading: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#222",
+    textAlign: "center",
+    letterSpacing: 1,
+  },
+  buttonAdd: {
+    backgroundColor: "#2e7d32",
+    padding: 12,
+    borderRadius: 8,
+    width: "100%",
+    alignItems: "center",
+  },
+  buttonAddText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  }
 });
 
 export default Details;

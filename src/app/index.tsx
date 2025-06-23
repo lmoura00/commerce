@@ -1,15 +1,25 @@
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 import { StyleSheet, View, FlatList, Text, Pressable, Image } from 'react-native';
-import products from '@/data/products.json';
+
 import { useRouter } from 'expo-router';
-import fetchProducts from '@/api/routes';
+import { fetchProducts} from '@/api/products';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 const Index = () => {
     const router = useRouter();
-    const [products, setProducts] = React.useState([]);
-    useEffect(() => {
-        fetchProducts().then(data => setProducts(data)).catch(error => console.error(error));
-        setProducts(products);
-    }, []);
+    const queryClient = useQueryClient()
+    const {data: products, isLoading} = useQuery({
+        queryKey: ['products'],
+        queryFn: fetchProducts,
+        refetchOnWindowFocus: false,
+    });
+
+    if (isLoading) {
+        return (
+            <View style={styles.containerLoading}>
+                <Text style={styles.headerLoading}>Carregando...</Text>
+            </View>
+        );
+    }
     const handleProductPress = (id: string) => {
         router.push({ pathname: "/details/[id]", params: { id } });
     };
@@ -22,11 +32,7 @@ const Index = () => {
                 contentContainerStyle={{ padding: 16, gap: 8 }} 
                 numColumns={2}
                 columnWrapperStyle={{ gap: 8 }}
-                ListHeaderComponent={() => (
-                    <View style={{ paddingVertical: 16 }}>
-                        <Text style={styles.header}>Produtos</Text>
-                    </View>
-                )}
+      
                 renderItem={({ item }) => (
                     <Pressable style={styles.card} onPress={() => handleProductPress(item.id.toString())}>
                         <Image source={{ uri: item.image }} style={styles.image} />
@@ -89,6 +95,19 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#2e7d32',
         marginTop: 6,
+    },
+    containerLoading: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f6f6f6',
+    },
+    headerLoading: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#222',
+        textAlign: 'center',
+        letterSpacing: 1,
     },
 })
 
