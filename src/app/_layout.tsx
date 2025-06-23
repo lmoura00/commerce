@@ -1,9 +1,13 @@
+import { CartProvider } from '@/context/cart-context';
 import { Stack } from 'expo-router';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const Layout = () => {
+    const queryClient = new QueryClient()
     return (
+        <QueryClientProvider client={queryClient}>
+        <CartProvider>
         <Stack
             screenOptions={{
                 headerBackTitle: 'Voltar',
@@ -21,6 +25,8 @@ const Layout = () => {
                 name="details/[id]"
             />
         </Stack>
+        </CartProvider>
+        </QueryClientProvider>
     );
 }
 

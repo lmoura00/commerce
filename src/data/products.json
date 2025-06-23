@@ -1,4 +1,4 @@
-[
+{"products":[
   {
     "id": 1,
     "name": "AirPods Pro",
@@ -69,4 +69,4 @@
     "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/ecom/playstation5.jpg",
     "price": 2699.95
   }
-]
+]}

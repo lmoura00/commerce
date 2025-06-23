@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, FlatList, Text, Pressable, Image } from 'react-native';
 import products from '@/data/products.json';
 import { useRouter } from 'expo-router';
+import fetchProducts from '@/api/routes';
 const Index = () => {
     const router = useRouter();
+    const [products, setProducts] = React.useState([]);
+    useEffect(() => {
+        fetchProducts().then(data => setProducts(data)).catch(error => console.error(error));
+        setProducts(products);
+    }, []);
     const handleProductPress = (id: string) => {
         router.push({ pathname: "/details/[id]", params: { id } });
     };
@@ -11,9 +17,9 @@ const Index = () => {
         <View style={styles.container}>
             <FlatList
                 data={products}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => item.id}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ padding: 16, gap: 8 }} // Removido flex:1
+                contentContainerStyle={{ padding: 16, gap: 8 }} 
                 numColumns={2}
                 columnWrapperStyle={{ gap: 8 }}
                 ListHeaderComponent={() => (

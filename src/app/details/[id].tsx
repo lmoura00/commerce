@@ -2,10 +2,11 @@ import { Stack, useRouter } from "expo-router";
 import React, { use } from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import products from "@/data/products.json";
+import { useCart } from "@/context/cart-context";
 const Details = () => {
   const { id } = useLocalSearchParams();
-  const product = products.find((item) => item.id.toString() === id);
+  
+  
   return (
     <View style={styles.container}>
       <Stack.Screen
